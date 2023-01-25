@@ -17,20 +17,39 @@ function Player(namePlayer) {
   };
 
 
-  let i = 1;
-  setInterval(this.poison = function(targetPlayer){
-    if(this.sp >= 20){
-        this.sp -= 20;
-        targetPlayer.pv -= 5;
-        i -- ;
-        console.info("Te has envenenado");
-        console.log(targetPlayer);
-    }else{
-        
+  this.poison = function(targetPlayer = Player){
+
+    let instance = this;
+    clearInterval(instance.poisonHitsTime);
+
+    if (instance.poisonHits > 0) {
+        instance.poisonHits = 0;
     }
-        
+
+    instance.addPoisonEffect(targetPlayer, instance);
+
+    instance.poisonHitsTime = setInterval( function() {
+
+        if (instance.poisonHits < instance.limitPoison) {
+            instance.addPoisonEffect(targetPlayer, instance);
+            
+        } else {
+            console.log("Fin del envenenamiento :" + targetPlayer.namePlayer);
+            instance.poisonHits = 0;
+            instance.state(targetPlayer);
+            clearInterval(instance.poisonHitsTime);
+        }
+
+    }, 5000)
     
-  }, 1000);
+  };
+
+  this.addPoisonEffect = function (targetPlayer, currentPlayer) {
+    currentPlayer.sp -= 20;
+    targetPlayer.pv -= 5;
+    console.log("Has sido envenenado: " + targetPlayer.namePlayer)
+    currentPlayer.poisonHits += 5
+  };
  
 
 
@@ -49,7 +68,7 @@ function Player(namePlayer) {
     console.info(this);
     console.info(targetPlayer);
   };
-}
+};
 
 var gandalf = new Player("gandalf");
 var legolas = new Player("legolas");
